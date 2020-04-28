@@ -20,17 +20,15 @@ server <- function(input, output) {
         # Get actively loaded packages ----
         packageids <- (.packages())
         
-        # Create an empty vector to be our list; length is 6 shorter than the
-        # actual list of packages because that's how many base R citations it
-        # would return ----
-        citationslist <- vector(length = (length(packageids) - 6))
+        # Create an empty vector to be our list
+        citationslist <- vector(length = (length(packageids)))
         
-        # For loop runs through each package and grabs the actual citation ---
-        for (i in 1:length(citationslist)) {
-            
-            # Add the citation for i in the html format ----
-            citationslist[i] <- format(citation(packageids[i]), "html")
-        }
+        # Use lapply to grab citations from package IDs and format them in HTML ----
+        citationslist <- lapply(lapply(packageids, citation), format, "html")
+        
+        # Next we remove duplicates in the list; base R packages all have the same
+        # citation ----
+        citationslist <- unique(citationslist)
         
         # Now we have to apply the HTML() function for Shiny to read the HTML
         # in the citations ----
